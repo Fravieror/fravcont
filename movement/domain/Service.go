@@ -1,7 +1,7 @@
 package domain
 
 type Service interface {
-	save(Movement)
-	getList() []Movement
-	get(string) Movement
+	Save(*Movement)
+	GetList() []*Movement
+	Get(id string) *Movement
 }

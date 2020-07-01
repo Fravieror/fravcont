@@ -1,7 +1,7 @@
 package domain
 
 type Repository interface {
-	saveMovement(Movement)
-	getList() []Movement
-	getMovement(string) Movement
+	Save(*Movement) error
+	Get(id string) (*Movement, error)
+	GetList() ([]*Movement, error)
 }
