@@ -8,21 +8,18 @@ import (
 )
 
 func Get(w http.ResponseWriter, r *http.Request) {
-	// code := chi.URLParam(r, "code")
-	// redirect, err := h.redirectService.Find(code)
-	// if err != nil {
-	// 	if errors.Cause(err) == ErrRedirectNotFound {
-	// 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusInternalServerError)
-	// 		return
-	// 	}
-	// }
-	// contentType := r.Header.Get("Content-Type")
-	// responseBody, err := h.serializer(contentType).Encode(redirect)
-	// if err != nil {
-	// 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-	// 	return
-	// }
-	// setupResponse(w, contentType, responseBody, http.StatusOK)
+	id, ok := r.URL.Query()["id"]
+	if !ok {
+		w.Write([]byte(`{"message": "param id not sended"}`))
+		return
+	}
+	bussines := application.NewBussines(&MySQLRepository{})
+	response := bussines.Get(id[0])
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		w.Write([]byte("Error cast struct to json"))
+	}
+	w.Write(jsonResponse)
 }
 func Post(w http.ResponseWriter, r *http.Request) {
 	var movement domain.Movement
@@ -34,8 +31,26 @@ func Post(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	bussines.Save(&movement)
-	w.Write([]byte(`{"message": "hello world"}`))
+	response := bussines.Save(&movement)
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		w.Write([]byte("Error cast struct to json"))
+	}
+	w.Write(jsonResponse)
+}
+func GetList(w http.ResponseWriter, r *http.Request) {
+	client, ok := r.URL.Query()["client"]
+	if !ok {
+		w.Write([]byte(`{"message": "param client not sended"}`))
+		return
+	}
+	bussines := application.NewBussines(&MySQLRepository{})
+	response := bussines.GetList(client[0])
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		w.Write([]byte("Error cast struct to json"))
+	}
+	w.Write(jsonResponse)
 }
 func Ping(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`{"message": "Pong"}`))
